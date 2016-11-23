@@ -1,4 +1,4 @@
-// Copyright © 2004, 2015, Oracle and/or its affiliates. All rights reserved.
+// Copyright ?2004, 2015, Oracle and/or its affiliates. All rights reserved.
 //
 // MySQL Connector/NET is licensed under the terms of the GPLv2
 // <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most 
@@ -196,101 +196,103 @@ namespace MySql.Data.MySqlClient
 
     public void SetTypeAndFlags(MySqlDbType type, ColumnFlags flags)
     {
-      colFlags = flags;
-      mySqlDbType = type;
+        colFlags = flags;
+        mySqlDbType = type;
 
-      if (String.IsNullOrEmpty(TableName) && String.IsNullOrEmpty(RealTableName) &&
-        IsBinary && driver.Settings.FunctionsReturnString)
-      {
-        CharacterSetIndex = driver.ConnectionCharSetIndex;
-      }
-
-      // if our type is an unsigned number, then we need
-      // to bump it up into our unsigned types
-      // we're trusting that the server is not going to set the UNSIGNED
-      // flag unless we are a number
-      if (IsUnsigned)
-      {
-        switch (type)
+        if (String.IsNullOrEmpty(TableName) && String.IsNullOrEmpty(RealTableName) &&
+          IsBinary && driver.Settings.FunctionsReturnString)
         {
-          case MySqlDbType.Byte:
-            mySqlDbType = MySqlDbType.UByte;
-            return;
-          case MySqlDbType.Int16:
-            mySqlDbType = MySqlDbType.UInt16;
-            return;
-          case MySqlDbType.Int24:
-            mySqlDbType = MySqlDbType.UInt24;
-            return;
-          case MySqlDbType.Int32:
-            mySqlDbType = MySqlDbType.UInt32;
-            return;
-          case MySqlDbType.Int64:
-            mySqlDbType = MySqlDbType.UInt64;
-            return;
-        }
-      }
-
-      if (IsBlob)
-      {
-        // handle blob to UTF8 conversion if requested.  This is only activated
-        // on binary blobs
-        if (IsBinary && driver.Settings.TreatBlobsAsUTF8)
-        {
-          bool convertBlob = false;
-          Regex includeRegex = driver.Settings.GetBlobAsUTF8IncludeRegex();
-          Regex excludeRegex = driver.Settings.GetBlobAsUTF8ExcludeRegex();
-          if (includeRegex != null && includeRegex.IsMatch(ColumnName))
-            convertBlob = true;
-          else if (includeRegex == null && excludeRegex != null &&
-            !excludeRegex.IsMatch(ColumnName))
-            convertBlob = true;
-
-          if (convertBlob)
-          {
-            binaryOk = false;
-            Encoding = System.Text.Encoding.GetEncoding("UTF-8");
-            charSetIndex = -1;  // lets driver know we are in charge of encoding
-            maxLength = 4;
-          }
+            CharacterSetIndex = driver.ConnectionCharSetIndex;
         }
 
-        if (!IsBinary)
+        // if our type is an unsigned number, then we need
+        // to bump it up into our unsigned types
+        // we're trusting that the server is not going to set the UNSIGNED
+        // flag unless we are a number
+        if (IsUnsigned)
         {
-          if (type == MySqlDbType.TinyBlob)
-            mySqlDbType = MySqlDbType.TinyText;
-          else if (type == MySqlDbType.MediumBlob)
-            mySqlDbType = MySqlDbType.MediumText;
-          else if (type == MySqlDbType.Blob)
-            mySqlDbType = MySqlDbType.Text;
-          else if (type == MySqlDbType.LongBlob)
-            mySqlDbType = MySqlDbType.LongText;
+            switch (type)
+            {
+                case MySqlDbType.Byte:
+                    mySqlDbType = MySqlDbType.UByte;
+                    return;
+                case MySqlDbType.Int16:
+                    mySqlDbType = MySqlDbType.UInt16;
+                    return;
+                case MySqlDbType.Int24:
+                    mySqlDbType = MySqlDbType.UInt24;
+                    return;
+                case MySqlDbType.Int32:
+                    mySqlDbType = MySqlDbType.UInt32;
+                    return;
+                case MySqlDbType.Int64:
+                    mySqlDbType = MySqlDbType.UInt64;
+                    return;
+            }
         }
-      }
 
-      // now determine if we really should be binary
-      if (driver.Settings.RespectBinaryFlags)
-        CheckForExceptions();
+        if (IsBlob)
+        {
+            // handle blob to UTF8 conversion if requested.  This is only activated
+            // on binary blobs
+            if (IsBinary && driver.Settings.TreatBlobsAsUTF8)
+            {
+                bool convertBlob = false;
+                Regex includeRegex = driver.Settings.GetBlobAsUTF8IncludeRegex();
+                Regex excludeRegex = driver.Settings.GetBlobAsUTF8ExcludeRegex();
+                if (includeRegex != null && includeRegex.IsMatch(ColumnName))
+                    convertBlob = true;
+                else if (includeRegex == null && excludeRegex != null &&
+                  !excludeRegex.IsMatch(ColumnName))
+                    convertBlob = true;
 
-      if (Type == MySqlDbType.String && CharacterLength == 36 && !driver.Settings.OldGuids)
-        mySqlDbType = MySqlDbType.Guid;
+                if (convertBlob)
+                {
+                    binaryOk = false;
+                    Encoding = System.Text.Encoding.GetEncoding("UTF-8");
+                    charSetIndex = -1;  // lets driver know we are in charge of encoding
+                    maxLength = 4;
+                }
+            }
 
-      if (!IsBinary) return;
+            if (!IsBinary)
+            {
+                if (type == MySqlDbType.TinyBlob)
+                    mySqlDbType = MySqlDbType.TinyText;
+                else if (type == MySqlDbType.MediumBlob)
+                    mySqlDbType = MySqlDbType.MediumText;
+                else if (type == MySqlDbType.Blob)
+                    mySqlDbType = MySqlDbType.Text;
+                else if (type == MySqlDbType.LongBlob)
+                    mySqlDbType = MySqlDbType.LongText;
+            }
+        }
 
-      if (driver.Settings.RespectBinaryFlags)
-      {
-        if (type == MySqlDbType.String)
-          mySqlDbType = MySqlDbType.Binary;
-        else if (type == MySqlDbType.VarChar ||
-             type == MySqlDbType.VarString)
-          mySqlDbType = MySqlDbType.VarBinary;
-      }
+        // now determine if we really should be binary
+        if (driver.Settings.RespectBinaryFlags)
+            CheckForExceptions();
 
-      if (CharacterSetIndex == 63)
-        CharacterSetIndex = driver.ConnectionCharSetIndex;
+        //≤ª◊‘∂ØΩ‚ŒˆGuid¿‡–Õ∑¿÷π≥Ã–ÚŒÛ≈– 2016-11-23
+        //if (Type == MySqlDbType.String && CharacterLength == 36 && !driver.Settings.OldGuids)
+        //  mySqlDbType = MySqlDbType.Guid;
 
-      if (Type == MySqlDbType.Binary && ColumnLength == 16 && driver.Settings.OldGuids)
-        mySqlDbType = MySqlDbType.Guid;
+        if (!IsBinary) return;
+
+        if (driver.Settings.RespectBinaryFlags)
+        {
+            if (type == MySqlDbType.String)
+                mySqlDbType = MySqlDbType.Binary;
+            else if (type == MySqlDbType.VarChar ||
+                 type == MySqlDbType.VarString)
+                mySqlDbType = MySqlDbType.VarBinary;
+        }
+
+        if (CharacterSetIndex == 63)
+            CharacterSetIndex = driver.ConnectionCharSetIndex;
+
+        //≤ª◊‘∂ØΩ‚ŒˆGuid¿‡–Õ∑¿÷π≥Ã–ÚŒÛ≈– 2016-11-23
+        //if (Type == MySqlDbType.Binary && ColumnLength == 16 && driver.Settings.OldGuids)
+        //  mySqlDbType = MySqlDbType.Guid;
     }
 
     public void AddTypeConversion(Type t)
