@@ -46,21 +46,21 @@
         <DefineConstants>NET_40_OR_GREATER</DefineConstants>
       </PropertyGroup>
     </When>
-  </Choose>  
+  </Choose>
   <Choose>
     <When Condition="'$(Framework)' == '4.5.1'">
-      <ItemGroup>        
-			<None Include="App.Config" Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
-			  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			  <SubType>Designer</SubType>
-			</None>
-			<None Include="EF6\App.Config" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
-			  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			  <SubType>Designer</SubType>
-			</None>
-		</ItemGroup>
-	</When>
-  </Choose>  
+      <ItemGroup>
+        <None Include="App.Config" Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <SubType>Designer</SubType>
+        </None>
+        <None Include="EF6\App.Config" Condition="'$(Configuration)' == 'DebugEF6' Or '$(Configuration)' == 'ReleaseEF6'">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <SubType>Designer</SubType>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -220,15 +220,11 @@
     <Compile Include="MySqlMigrationsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetUpMigrationsTests.cs" />
-  </ItemGroup> 
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\MySql.Data.Entity\MySql.Data.Entity.csproj">
-      <Project>{EDED3135-95D2-4BCE-A810-F3F2AD7935B7}</Project>
-      <Name>MySql.Data.Entity</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\MySql.Data\MySql.Data.csproj">
       <Project>{E9DF5ED1-4CBD-4226-B931-9A51610AC14D}</Project>
       <Name>MySql.Data</Name>

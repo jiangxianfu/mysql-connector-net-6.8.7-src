@@ -448,23 +448,71 @@ namespace MySql.Data.Types
       return String.Format(format, monthVal, dayVal, yearVal, year2digit, year1digit);
     }
 
+   /// <summary>
+   ///  set to string format
+   /// </summary>
+   /// <param name="format"></param>
+   /// <returns></returns>
+    public string ToString(string format)
+    {
+        if (this.IsValidDateTime)
+        {
+            DateTime d = new DateTime(year, month, day, hour, minute, second).AddTicks(microsecond * 10);
+            return d.ToString(format);
+        }
+        string dateString = FormatDateCustom(
+           CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern, month, day, year);
+        if (type == MySqlDbType.Date)
+            return dateString;
+
+        DateTime dt = new DateTime(1, 2, 3, hour, minute, second).AddTicks(microsecond * 10);
+        dateString = String.Format("{0} {1}", dateString, dt.ToLongTimeString());
+        return dateString;
+
+    }
     /// <summary>Returns a MySQL specific string representation of this value</summary>
     public override string ToString()
     {
-      if (this.IsValidDateTime)
-      {
-        DateTime d = new DateTime(year, month, day, hour, minute, second).AddTicks(microsecond * 10);
-        return (type == MySqlDbType.Date) ? d.ToString("d") : d.ToString();
-      }
 
-      string dateString = FormatDateCustom(
-          CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern, month, day, year);
-      if (type == MySqlDbType.Date)
+        if (this.IsValidDateTime)
+        {
+            DateTime d = new DateTime(year, month, day, hour, minute, second).AddTicks(microsecond * 10);
+            return (type == MySqlDbType.Date) ? d.ToString("d") : d.ToString();
+        }
+
+        string dateString = FormatDateCustom(
+            CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern, month, day, year);
+        if (type == MySqlDbType.Date)
+            return dateString;
+
+        DateTime dt = new DateTime(1, 2, 3, hour, minute, second).AddTicks(microsecond * 10);
+        dateString = String.Format("{0} {1}", dateString, dt.ToLongTimeString());
         return dateString;
 
-      DateTime dt = new DateTime(1, 2, 3, hour, minute, second).AddTicks(microsecond * 10);
-      dateString = String.Format("{0} {1}", dateString, dt.ToLongTimeString());
-      return dateString;
+
+
+        //if (this.IsValidDateTime)
+        //{
+        //    if (second > 1000)
+        //    {
+        //        return string.Format("{0:0000}-{1:00}-{2:00} {3:00}:{4:00}:{5:00}.{6}", year, month, day, hour, minute, second, microsecond);
+        //    }
+        //    if (type == MySqlDbType.Date)
+        //    {
+        //        DateTime d = new DateTime(year, month, day, hour, minute, second).AddTicks(microsecond * 10);
+        //        return (type == MySqlDbType.Date) ? d.ToString("d") : d.ToString();
+
+        //  return string.Format("{0:0000}-{1:00}-{2:00} {3:00}:{4:00}:{5:00}.{6}", year, month, day, hour, minute, second, microsecond);
+        //}
+
+        //string dateString = FormatDateCustom(
+        //    CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern, month, day, year);
+        //if (type == MySqlDbType.Date)
+        //  return dateString;
+
+        //DateTime dt = new DateTime(1, 2, 3, hour, minute, second).AddTicks(microsecond * 10);
+        //dateString = String.Format("{0} {1}", dateString, dt.ToLongTimeString());
+        //return dateString;
     }
 
     /// <summary></summary>
